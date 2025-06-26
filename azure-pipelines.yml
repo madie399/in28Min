@@ -13,7 +13,7 @@ steps:
 - script: echo Hek8s Terraform Azure!l
   displayName: 'Run a one-line script'
 
-- task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+- task: TerraformToolInstaller@1
   inputs:
     terraformVersion: '1.6.6'
 
