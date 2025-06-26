@@ -13,7 +13,7 @@ steps:
 - script: echo Hek8s Terraform Azure!l
   displayName: 'Run a one-line script'
 
-- task: TerraformInstaller@1
+- task: JasonBJohnson.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
   inputs:
     terraformVersion: 'latest'
 
