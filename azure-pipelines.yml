@@ -11,16 +11,17 @@ pool:
 - task: TerraformCLI@2
   inputs:
     command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)configuration/iaac/azure/kubernetes'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
     backendType: 'azurerm'
     backendServiceArm: 'sc-azure-resourcemanager'
     backendAzureRmTenantId: 'd5d40ca8-b5aa-4d8f-8272-407b515cb5a7'
     backendAzureRmSubscriptionId: 'ee319277-edaa-4c07-9b91-04d1eb7bf895'
     ensureBackend: true
-    backendAzureRmResourceGroupName: 'rg-terraform-0001'
-    backendAzureRmResourceGroupLocation: 'East US'
-    backendAzureRmStorageAccountName: 'stmadieterraform99'
-    backendAzureRmContainerName: 'practicecont'
+    backendAzureRmResourceGroupName: 'RG-terraform-aksbuid-001'
+    backendAzureRmResourceGroupLocation: 'east us'
+    backendAzureRmStorageAccountName: 'stfirstterraformaks001'
+    backendAzureRmContainerName: 'containerterraform-aks'
+    backendAzureRmKey: 'kubernetes-dev.tfstate'
     allowTelemetryCollection: true
 steps:
 - script: echo Hek8s Terraform Azure!l
