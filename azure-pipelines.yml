@@ -8,10 +8,20 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+
+steps:
+- script: echo Hek8s Terraform Azure!l
+  displayName: 'Run a one-line script'
+- task: DownloadSecureFile@1
+  name: publickey
+  inputs:
+    secureFile: 'azure_rsa.pub'
+
 - task: TerraformCLI@2
   inputs:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_piblic_key=$(publickey.secureFilePath)'
     backendType: 'azurerm'
     backendServiceArm: 'sc-azure-resourcemanager'
     backendAzureRmTenantId: 'd5d40ca8-b5aa-4d8f-8272-407b515cb5a7'
@@ -23,7 +33,6 @@ pool:
     backendAzureRmContainerName: 'containerterraform-aks'
     backendAzureRmKey: 'kubernetes-dev.tfstate'
     allowTelemetryCollection: true
-steps:
-- script: echo Hek8s Terraform Azure!l
-  displayName: 'Run a one-line script'
+
+
 
