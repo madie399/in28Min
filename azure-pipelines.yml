@@ -12,6 +12,11 @@ pool:
 steps:
 - script: echo Hek8s Terraform Azure!l
   displayName: 'Run a one-line script'
+
+- task: TerraformInstaller@1
+  inputs:
+    terraformVersion: 'latest'
+
 - task: DownloadSecureFile@1
   name: publickey
   inputs:
