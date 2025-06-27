@@ -5,50 +5,48 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-# ✅ Simple test script
-- script: echo "Hello Terraform AKS!"
-  displayName: 'Run a one-line script'
+# ✅ Step 1: Welcome message
+- script: echo "🚀 Starting Terraform AKS Pipeline"
+  displayName: 'Start Message'
 
-# ✅ Manually install Terraform 1.5.7 with timeout + debug
+# ✅ Step 2: Install Terraform 1.5.7 manually
 - script: |
-    echo "Downloading Terraform..."
-    curl --fail --location --retry 3 --connect-timeout 10 --max-time 60 https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip -o terraform.zip
-
-    echo "Unzipping Terraform..."
-    unzip terraform.zip
-
-    echo "Installing Terraform binary..."
+    echo "🔽 Downloading Terraform..."
+    curl -LO https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+    unzip terraform_1.5.7_linux_amd64.zip
     sudo mv terraform /usr/local/bin/
     chmod +x /usr/local/bin/terraform
 
-    echo "Terraform version installed:"
+    echo "✅ Terraform Installed:"
     terraform version
-  displayName: 'Install Terraform 1.5.7 with Timeout'
+  displayName: 'Install Terraform 1.5.7'
 
-# ✅ Confirm terraform is working
-- script: terraform version
-  displayName: 'Verify Terraform Version'
-
-# ✅ Download secure SSH public key from Library
+# ✅ Step 3: Download SSH public key (from Library)
 - task: DownloadSecureFile@1
   name: publickey
   inputs:
     secureFile: 'azure_rsa.pub'
 
-# ✅ Terraform Init with Azure backend
-- task: TerraformCLI@2
-  inputs:
-    command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
-    backendType: 'azurerm'
-    backendServiceArm: 'sc-azure-resourcemanager'
-    backendAzureRmTenantId: 'd5d40ca8-b5aa-4d8f-8272-407b515cb5a7'
-    backendAzureRmSubscriptionId: 'ee319277-edaa-4c07-9b91-04d1eb7bf895'
-    ensureBackend: true
-    backendAzureRmResourceGroupName: 'RG-terraform-aksbuid-001'
-    backendAzureRmResourceGroupLocation: 'east us'
-    backendAzureRmStorageAccountName: 'stfirstterraformaks001'
-    backendAzureRmContainerName: 'containerterraform-aks'
-    backendAzureRmKey: 'kubernetes-dev.tfstate'
-    allowTelemetryCollection: true
+# ✅ Step 4: Run Terraform Init via shell script
+- script: |
+    cd $(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes
+
+    terraform init \
+      -backend-config="resource_group_name=RG-terraform-aksbuid-001" \
+      -backend-config="storage_account_name=stfirstterraformaks001" \
+      -backend-config="container_name=containerterraform-aks" \
+      -backend-config="key=kubernetes-dev.tfstate" \
+      -backend-config="subscription_id=ee319277-edaa-4c07-9b91-04d1eb7bf895" \
+      -backend-config="tenant_id=d5d40ca8-b5aa-4d8f-8272-407b515cb5a7"
+
+    echo "✅ Terraform Init Completed"
+  displayName: 'Terraform Init (Shell)'
+
+# ✅ Step 5: Optional — Run Terraform Plan (You can enable this later)
+# - script: |
+#     cd $(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes
+#     terraform plan \
+#       -var="client_id=$(client_id)" \
+#       -var="client_secret=$(client_secret)" \
+#       -var="ssh_public_key=$(publickey.secureFilePath)"
+#   displayName: 'Terraform Plan'
