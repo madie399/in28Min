@@ -8,13 +8,15 @@ steps:
 - script: echo Hello Terraform AKS!
   displayName: 'Run a one-line script'
 
-# ✅ Use official Terraform installer (Microsoft-hosted)
-- task: hashicorpTerraformInstaller@1
-  inputs:
-    terraformVersion: '1.5.7'
+# ✅ Manually install Terraform (reliable, avoids all task issues)
+- script: |
+    curl -LO https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+    unzip terraform_1.5.7_linux_amd64.zip
+    sudo mv terraform /usr/local/bin/
+  displayName: 'Install Terraform 1.5.7'
 
 - script: terraform version
-  displayName: 'Verify Terraform Installation'
+  displayName: 'Verify Terraform Version'
 
 - task: DownloadSecureFile@1
   name: publickey
