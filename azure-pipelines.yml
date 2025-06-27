@@ -15,7 +15,7 @@ steps:
 
 - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1
   inputs:
-    terraformVersion: 'latest'
+    terraformVersion: '1.5.7'
 
 - script: terraform version
   displayName: 'Verify Terraform Installation'
