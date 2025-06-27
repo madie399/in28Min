@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -10,10 +5,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hek8s Terraform Azure!l
+- script: echo Hello Terraform AKS!
   displayName: 'Run a one-line script'
 
-- task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1
+# ✅ Use official Terraform installer (Microsoft-hosted)
+- task: hashicorpTerraformInstaller@1
   inputs:
     terraformVersion: '1.5.7'
 
@@ -41,6 +37,3 @@ steps:
     backendAzureRmContainerName: 'containerterraform-aks'
     backendAzureRmKey: 'kubernetes-dev.tfstate'
     allowTelemetryCollection: true
-
-
-
