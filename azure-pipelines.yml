@@ -1,0 +1,43 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# ✅ Step 1: Welcome message
+- script: echo "🚀 Starting Terraform AKS Pipeline"
+  displayName: 'Start Message'
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+
+
+# ✅ Step 3: Download SSH public key (from Library)
+- task: DownloadSecureFile@1
+  name: publickey
+  inputs:
+    secureFile: 'azure_rsa.pub'
+
+# ✅ Step 4: Run Terraform Init via shell script
+- script: |
+    cd $(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes
+
+    terraform init \
+      -backend-config="resource_group_name=RG-terraform-aksbuid-001" \
+      -backend-config="storage_account_name=stfirstterraformaks001" \
+      -backend-config="container_name=containerterraform-aks" \
+      -backend-config="key=kubernetes-dev.tfstate" \
+      -backend-config="subscription_id=ee319277-edaa-4c07-9b91-04d1eb7bf895" \
+      -backend-config="tenant_id=d5d40ca8-b5aa-4d8f-8272-407b515cb5a7"
+
+    echo "✅ Terraform Init Completed"
+  displayName: 'Terraform Init (Shell)'
+
+# ✅ Step 5: Optional — Run Terraform Plan (You can enable this later)
+# - script: |
+#     cd $(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes
+#     terraform plan \
+#       -var="client_id=$(client_id)" \
+#       -var="client_secret=$(client_secret)" \
+#       -var="ssh_public_key=$(publickey.secureFilePath)"
+#   displayName: 'Terraform Plan'
