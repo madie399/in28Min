@@ -5,29 +5,42 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello Terraform AKS!
+# ✅ Simple test script
+- script: echo "Hello Terraform AKS!"
   displayName: 'Run a one-line script'
 
-# ✅ Manually install Terraform (reliable, avoids all task issues)
+# ✅ Manually install Terraform 1.5.7 with timeout + debug
 - script: |
-    curl -LO https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
-    unzip terraform_1.5.7_linux_amd64.zip
-    sudo mv terraform /usr/local/bin/
-  displayName: 'Install Terraform 1.5.7'
+    echo "Downloading Terraform..."
+    curl --fail --location --retry 3 --connect-timeout 10 --max-time 60 https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip -o terraform.zip
 
+    echo "Unzipping Terraform..."
+    unzip terraform.zip
+
+    echo "Installing Terraform binary..."
+    sudo mv terraform /usr/local/bin/
+    chmod +x /usr/local/bin/terraform
+
+    echo "Terraform version installed:"
+    terraform version
+  displayName: 'Install Terraform 1.5.7 with Timeout'
+
+# ✅ Confirm terraform is working
 - script: terraform version
   displayName: 'Verify Terraform Version'
 
+# ✅ Download secure SSH public key from Library
 - task: DownloadSecureFile@1
   name: publickey
   inputs:
     secureFile: 'azure_rsa.pub'
 
+# ✅ Terraform Init with Azure backend
 - task: TerraformCLI@2
   inputs:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_piblic_key=$(publickey.secureFilePath)'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
     backendType: 'azurerm'
     backendServiceArm: 'sc-azure-resourcemanager'
     backendAzureRmTenantId: 'd5d40ca8-b5aa-4d8f-8272-407b515cb5a7'
